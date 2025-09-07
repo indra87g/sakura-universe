@@ -1,0 +1,40 @@
+{
+  "servers": [
+    {
+      "id": "main",
+      "name": "Sakura Universe",
+      "description": "Main server with survival and creative modes",
+      "host": "veda.hidencloud.com",
+      "port": 24689,
+      "type": "bedrock",
+      "isDefault": true,
+      "features": ["Survival", "Creative", "PvP", "Events", "Cross-platform"],
+      "motdFallback": "Sakura Universe - Cherry Blossom Minecraft Server"
+    },
+    {
+      "id": "creative",
+      "name": "Sakura Creative",
+      "description": "Creative building server",
+      "host": "creative.sakurauniverse.net",
+      "port": 25566,
+      "isDefault": false,
+      "features": ["Creative", "WorldEdit", "Plots"],
+      "motdFallback": "Sakura Creative - Build Your Dreams"
+    },
+    {
+      "id": "pvp",
+      "name": "Sakura PvP",
+      "description": "Competitive PvP battles",
+      "host": "pvp.sakurauniverse.net",
+      "port": 25567,
+      "isDefault": false,
+      "features": ["PvP", "KitPvP", "Tournaments"],
+      "motdFallback": "Sakura PvP - Battle Arena"
+    }
+  ],
+  "settings": {
+    "queryTimeout": 5000,
+    "refreshInterval": 30000,
+    "showOfflineServers": true
+  }
+}
