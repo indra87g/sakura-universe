@@ -1,7 +1,5 @@
 {
   "name": "sakura-universe",
   "compatibility_date": "2025-09-07",
-  "assets": {
-    "directory": "./dist"
-  } 
+  "main": "server/index.ts"
 }
