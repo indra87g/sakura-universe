@@ -2,11 +2,15 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import { raw } from "vite-plugin-raw";
 
 export default defineConfig({
   plugins: [
     react(),
     runtimeErrorOverlay(),
+    raw({
+      match: /\.md$/,
+    }),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [
@@ -19,8 +23,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
-      "shared": path.resolve(import.meta.dirname, "..", "shared"),
-      "@assets": path.resolve(import.meta.dirname, "..", "attached_assets"),
     },
   },
   build: {

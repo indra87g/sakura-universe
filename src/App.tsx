@@ -6,10 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navigation } from "@/components/navigation";
 import Home from "@/pages/home";
-import Blog, { BlogPost } from "@/pages/blog";
+import Blog from "@/pages/blog";
+import BlogPost from "@/pages/blog-post";
 import Rules from "@/pages/rules";
 import Guide from "@/pages/guide";
-import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -20,7 +20,6 @@ function Router() {
       <Route path="/blog/:slug" component={BlogPost} />
       <Route path="/rules" component={Rules} />
       <Route path="/guide" component={Guide} />
-      <Route path="/contact" component={Contact} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -96,7 +95,6 @@ function Footer() {
               <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-forum">Forum</a></li>
               <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-gallery">Player Gallery</a></li>
               <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-events">Events</a></li>
-              <li><a href="/contact" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-contact">Contact</a></li>
             </ul>
           </div>
 

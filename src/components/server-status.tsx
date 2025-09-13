@@ -2,9 +2,50 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { type ServerStatus } from "@shared/schema";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
+// Hardcoded server list from config.json
+const servers: MinecraftServer[] = [
+    {
+      "id": "main",
+      "name": "Sakura Universe",
+      "description": "Main server with survival and creative modes",
+      "host": "veda.hidencloud.com",
+      "port": 24689,
+      "type": "bedrock",
+      "isDefault": true,
+      "features": ["Survival", "Creative", "PvP", "Events", "Cross-platform"],
+      "motdFallback": "Sakura Universe - Cherry Blossom Minecraft Server"
+    },
+    {
+      "id": "creative",
+      "name": "Sakura Creative",
+      "description": "Creative building server",
+      "host": "creative.sakurauniverse.net",
+      "port": 25566,
+      "isDefault": false,
+      "features": ["Creative", "WorldEdit", "Plots"],
+      "motdFallback": "Sakura Creative - Build Your Dreams"
+    },
+    {
+      "id": "pvp",
+      "name": "Sakura PvP",
+      "description": "Competitive PvP battles",
+      "host": "pvp.sakurauniverse.net",
+      "port": 25567,
+      "isDefault": false,
+      "features": ["PvP", "KitPvP", "Tournaments"],
+      "motdFallback": "Sakura PvP - Battle Arena"
+    }
+  ];
+
+// Interfaces previously in @shared/schema
 interface MinecraftServer {
   id: string;
   name: string;
@@ -14,34 +55,97 @@ interface MinecraftServer {
   isDefault: boolean;
   features: string[];
   motdFallback: string;
+  type?: "java" | "bedrock";
 }
 
-interface ExtendedServerStatus extends ServerStatus {
-  name?: string;
-  description?: string;
-  features?: string[];
-  port?: number;
-  motd?: string;
+interface ExtendedServerStatus {
+    id: string;
+    name: string;
+    description: string;
+    status: 'ONLINE' | 'OFFLINE';
+    playerCount: string;
+    maxPlayers: string;
+    version: string;
+    ip: string;
+    port: number;
+    motd: string;
+    features: string[];
+    isDefault: boolean;
+    updatedAt: Date;
+}
+
+// Helper to fetch and transform server status from mcstatus.io
+async function fetchServerStatus(server: MinecraftServer): Promise<ExtendedServerStatus> {
+    try {
+        const response = await fetch(`https://api.mcstatus.io/v2/status/bedrock/${server.host}:${server.port}`);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`API error for ${server.name}: ${response.status} ${errorText}`);
+            throw new Error(`API responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.online) {
+            return {
+                id: server.id,
+                name: server.name,
+                description: server.description,
+                status: "ONLINE",
+                playerCount: data.players?.online?.toString() || "0",
+                maxPlayers: data.players?.max?.toString() || "Unknown",
+                version: data.version?.name || "Bedrock",
+                ip: server.host,
+                port: server.port,
+                updatedAt: new Date(),
+                motd: data.motd?.clean || data.motd?.raw || server.motdFallback,
+                features: [...(server.features || []), "Bedrock Edition"],
+                isDefault: server.isDefault
+            };
+        } else {
+            throw new Error("Server reported as offline");
+        }
+    } catch (error) {
+        console.error(`Failed to fetch status for ${server.name}:`, error);
+        return {
+            id: server.id,
+            name: server.name,
+            description: server.description,
+            status: "OFFLINE",
+            playerCount: "0",
+            maxPlayers: "Unknown",
+            version: "Unknown",
+            ip: server.host,
+            port: server.port,
+            updatedAt: new Date(),
+            motd: server.motdFallback + " (Offline)",
+            features: [...(server.features || []), "Bedrock Edition"],
+            isDefault: server.isDefault
+        };
+    }
 }
 
 export function ServerStatusCard() {
-  const [selectedServerId, setSelectedServerId] = useState<string>("");
+  const [selectedServerId, setSelectedServerId] = useState<string>("default");
 
-  // Get list of servers
-  const { data: servers } = useQuery<MinecraftServer[]>({
-    queryKey: ["/api/servers"],
-  });
-
-  // Get status for selected server (or default)
   const { data: status, isLoading } = useQuery<ExtendedServerStatus>({
-    queryKey: ["/api/server-status", selectedServerId],
+    queryKey: ["server-status", selectedServerId],
     queryFn: async () => {
-      const url = (selectedServerId && selectedServerId !== "default")
-        ? `/api/server-status?id=${selectedServerId}`
-        : "/api/server-status";
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch server status");
-      return response.json();
+      let targetServer: MinecraftServer | undefined;
+
+      if (selectedServerId === "default") {
+        targetServer = servers.find(s => s.isDefault) || servers[0];
+      } else {
+        targetServer = servers.find(s => s.id === selectedServerId);
+      }
+
+      if (!targetServer) {
+        // This should not happen if servers are configured
+        throw new Error("Server not found");
+      }
+
+      return fetchServerStatus(targetServer);
     },
     refetchInterval: 30000, // Refetch every 30 seconds
   });
@@ -100,7 +204,7 @@ export function ServerStatusCard() {
                 <SelectValue placeholder="Select a server" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="default">Default Server</SelectItem>
+                <SelectItem value="default">Default Server ({servers.find(s => s.isDefault)?.name || servers[0].name})</SelectItem>
                 {servers.map((server) => (
                   <SelectItem key={server.id} value={server.id}>
                     {server.name}
@@ -151,7 +255,7 @@ export function ServerStatusCard() {
           <div>
             <div className="text-sm text-muted-foreground">Server IP:</div>
             <code className="font-mono text-primary font-semibold" data-testid="server-ip">
-              {status.ip}{status.port && status.port !== 25565 ? `:${status.port}` : ''}
+              {status.ip}{status.port && status.port !== 19132 ? `:${status.port}` : ''}
             </code>
           </div>
           {status.motd && (

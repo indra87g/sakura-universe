@@ -16,10 +16,8 @@ export function Navigation() {
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Features", href: "/#features" },
-    { name: "News", href: "/blog" },
     { name: "Rules", href: "/rules" },
     { name: "How to Join", href: "/guide" },
-    { name: "Contact", href: "/contact" },
   ];
 
   return (

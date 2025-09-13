@@ -11,9 +11,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "shared/*": ["shared/*"],
-      "client/*": ["client/*"],
-      "server/*": ["server/*"]
-    }
+      "@/*": ["src/*"]
+    },
+    "jsx": "react-jsx"
   }
 }
