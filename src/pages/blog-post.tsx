@@ -7,7 +7,7 @@ import matter from "gray-matter";
 import { useEffect, useState } from "react";
 
 // This is a Vite feature to import all markdown files from a directory
-const postModules = import.meta.glob('/contents/blog/*.md', { as: 'raw', eager: true });
+const postModules = import.meta.glob('/contents/blog/*.md', { query: '?raw', import: 'default', eager: true });
 
 interface Post {
   slug: string;

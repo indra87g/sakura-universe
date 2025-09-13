@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import matter from "gray-matter";
 
 // This is a Vite feature to import all markdown files from a directory
-const postModules = import.meta.glob('/contents/blog/*.md', { as: 'raw', eager: true });
+const postModules = import.meta.glob('/contents/blog/*.md', { query: '?raw', import: 'default', eager: true });
 
 const posts = Object.entries(postModules).map(([path, rawContent]) => {
   const { data, content } = matter(rawContent);
