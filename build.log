@@ -11,7 +11,7 @@ node_modules/gray-matter/lib/engines.js (43:13): Use of eval in "node_modules/gr
 ✓ 2065 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/index.html                   2.20 kB │ gzip:   0.85 kB
+dist/index.html                   1.95 kB │ gzip:   0.74 kB
 dist/assets/index-DYRDEHRV.css   84.32 kB │ gzip:  13.64 kB
 dist/assets/index-Q0enM0In.js   634.39 kB │ gzip: 186.15 kB
 
@@ -19,4 +19,4 @@ dist/assets/index-Q0enM0In.js   634.39 kB │ gzip: 186.15 kB
 - Using dynamic import() to code-split the application
 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-✓ built in 7.38s
+✓ built in 8.04s
